@@ -37,7 +37,7 @@ GET http://localhost:4000/tweets/6/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI2MDU1MjY2fQ.Ru_LDFS6vu6epFZc0Hf3FRwzSoJpfN1FXlFtObnFPRo
 
 ###
-GET http://localhost:4000/tweets/6/likes/
+GET http://localhost:4000/tweets/7/likes/
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI2MDU1MjY2fQ.Ru_LDFS6vu6epFZc0Hf3FRwzSoJpfN1FXlFtObnFPRo
 
 ###
@@ -55,5 +55,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZ
 {
    "tweet":"The Mornings is brighter"
 }
+
+###
+DELETE http://localhost:4000/tweets/13/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvZUJpZGVuIiwiaWF0IjoxNjI2MDU1MjY2fQ.Ru_LDFS6vu6epFZc0Hf3FRwzSoJpfN1FXlFtObnFPRo
 
 ###

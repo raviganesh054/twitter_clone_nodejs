@@ -204,11 +204,12 @@ app.get("/tweets/:tweetId/", authorizationToken, async (request, response) => {
     console.log(tweetDetails);
   }
 });
+
 const createListAndPushToList = (userNames) => {
   const likes = [];
   for (let eachname of userNames) {
-    let { name } = eachname;
-    likes.push(name);
+    let { username } = eachname;
+    likes.push(username);
   }
   return { likes };
 };
@@ -237,7 +238,7 @@ app.get(
       console.log("Invalid Request");
     } else {
       const getUserLikedQuery = `SELECT 
-    user.name FROM 
+    user.username FROM 
     (tweet INNER JOIN like ON tweet.tweet_id=like.tweet_id) AS T 
     INNER JOIN user ON user.user_id=like.user_id 
     WHERE tweet.tweet_id=${tweetId};`;
@@ -289,10 +290,12 @@ app.get(
       GROUP BY user.user_id;`;
       const userReplys = await db.all(getUserReplayQuery);
       const objectArray = createListAndPushObjectToList(userReplys);
+      response.send(objectArray);
       console.log(objectArray);
     }
   }
 );
+
 app.get("/user/tweets/", authorizationToken, async (request, response) => {
   let { username } = request;
   const getUserDetails = `SELECT * FROM user WHERE username='${username}';`;
@@ -302,7 +305,7 @@ app.get("/user/tweets/", authorizationToken, async (request, response) => {
   tweet.tweet,
   COUNT(like.like_id) AS likes,
   COUNT(reply.reply) AS replies,
-  tweet.date_time
+  tweet.date_time AS dateTime
   FROM 
   (tweet LEFT JOIN like ON tweet.user_id=like.user_id)AS T 
   LEFT JOIN reply ON T.user_id=reply.user_id 
@@ -311,19 +314,42 @@ app.get("/user/tweets/", authorizationToken, async (request, response) => {
   const userTweet = await db.all(getUserTweetsQuery);
   response.send(userTweet);
 });
+
 app.post("/user/tweets/", authorizationToken, async (request, response) => {
-  //let { username } = request;
+  let { username } = request;
   const { tweet } = request.body;
-  console.log(request.body);
-  /*const getUserDetails = `SELECT * FROM user WHERE username='${username}';`;
+  console.log(request);
+  const getUserDetails = `SELECT * FROM user WHERE username='${username}';`;
   const userProfile = await db.get(getUserDetails);
   const { name, user_id } = userProfile;
   let date_time;
-  const insertQuery = `INSERT INTO tweet(tweet,user_id,date_time) 
-  VALUES('${tweet}',${user_id},'2020-07-16 10:00:00')`;
+  const insertQuery = `INSERT INTO tweet(tweet,user_id) 
+  VALUES('${tweet}',${user_id})`;
   await db.run(insertQuery);
-  response.send("Created a Tweet");*/
+  response.send("Created a Tweet");
 });
+
+app.delete(
+  "/tweets/:tweetId/",
+  authorizationToken,
+  async (request, response) => {
+    const { username } = request;
+    const { tweetId } = request.params;
+    const getUserQuery = `SELECT user_id FROM tweet 
+    WHERE tweet_id=${tweetId} AND user_id = (SELECT user_id FROM user WHERE username='${username}');`;
+    const userId = await db.get(getUserQuery);
+    //const { user_id } = userId;
+    console.log(userId);
+    if (userId === undefined) {
+      response.status(401);
+      response.send("Invalid Request");
+    } else {
+      const deleteTweetQuery = `DELETE FROM tweet WHERE tweet_id=${tweetId};`;
+      await db.run(deleteTweetQuery);
+      response.send("Tweet Removed");
+    }
+  }
+);
 
 module.exports = app;
 /*const dateNow = new Date();
